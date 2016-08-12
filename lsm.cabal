@@ -1,0 +1,70 @@
+name:                lsm
+version:             0.1.0.0
+synopsis:            Log Structured Merge for Haskell
+description:         Please see README.md
+homepage:            https://github.com/SeanTater/lsm
+license:             BSD3
+license-file:        LICENSE
+author:              Sean Gallagher
+maintainer:          stgallag@gmail.com
+copyright:           2016 Sean Gallagher
+category:            text
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+tested-with:         GHC == 7.10.2
+
+library
+  default-language:     Haskell2010
+  ghc-options:          -Wall
+  hs-source-dirs:       src
+  exposed-modules:      Data.LSM,
+                        Data.LSM.Map,
+                        Data.LSM.Vanilla,
+                        Data.LSM.LSMHashMap
+  build-depends:        base >= 4.7 && < 5,
+                        data-ordlist,
+                        vector,
+                        vector-algorithms,
+                        semigroups,
+                        hashable
+
+test-suite spec
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , lsm
+                     , hspec
+                     , QuickCheck
+                     , criterion
+                     , text
+                     , zlib
+                     , bytestring
+                     , deepseq
+
+benchmark comparison
+  default-language:   Haskell2010
+  type:               exitcode-stdio-1.0
+  main-is:            Bench.hs
+  hs-source-dirs:     test
+  build-depends:      base,
+                      criterion,
+                      text,
+                      zlib,
+                      bytestring,
+                      semigroups,
+                      lsm,
+                      critbit,
+                      containers,
+                      unordered-containers,
+                      vector,
+                      vector-algorithms,
+                      hashable,
+                      mwc-random
+
+source-repository head
+  type:     git
+  location: https://github.com/SeanTater/lsm
