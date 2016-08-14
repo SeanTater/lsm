@@ -19,6 +19,7 @@ import qualified Data.Vector.Algorithms.Intro as I
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Unboxed as U
 import qualified Data.LSM.Vanilla as Vanilla
+import qualified Data.LSM.UnboxedVanilla as UnboxedVanilla
 import qualified Data.LSM.LSMHashMap as LSMHashMap
 
 type Vi = U.Vector Int
@@ -67,7 +68,7 @@ main = defaultMain [
             bench "sorted"    $ whnf intmap sorted
           , bench "random"    $ whnf intmap random
           , bench "revsorted" $ whnf intmap revsorted
-          ]
+          ]{-
         , bgroup "Map" [
             bench "sorted"    $ whnf mmap sorted
           , bench "random"    $ whnf mmap random
@@ -77,11 +78,11 @@ main = defaultMain [
             bench "sorted"    $ whnf hashmap sorted
           , bench "random"    $ whnf hashmap random
           , bench "revsorted" $ whnf hashmap revsorted
-          ]
-        , bgroup "LSM Hash" [
-            bench "sorted"    $ whnf lsmhm sorted
-          , bench "random"    $ whnf lsmhm random
-          , bench "revsorted" $ whnf lsmhm revsorted
+          ]-}
+        , bgroup "LSM Unboxed" [
+            bench "sorted"    $ whnf lsmunbox sorted
+          , bench "random"    $ whnf lsmunbox random
+          , bench "revsorted" $ whnf lsmunbox revsorted
           ]
         , bgroup "LSM Vanilla" [
             bench "sorted"    $ whnf lsm sorted
@@ -89,24 +90,24 @@ main = defaultMain [
           , bench "revsorted" $ whnf lsm revsorted
           ]
         ]
-      , env strings $ boxedTest "ByteString"
+      , {-env strings $ boxedTest "ByteString"
       , env tokens_uniform $ boxedTest "5-char slices of KJV"
-      , env tokens_nonuniform $ boxedTest "Words of KJV"
+      , -}env tokens_nonuniform $ boxedTest "Words of KJV"
       ]
 
 boxedTest name = \ ~(random,sorted,revsorted) ->
   bgroup name [
-    bgroup "Map" [
+    {-bgroup "Map" [
       bench "sorted"    $ whnf mmap sorted
     , bench "random"    $ whnf mmap random
     , bench "revsorted" $ whnf mmap revsorted
     ]
-  , bgroup "HashMap" [
+  , -}bgroup "HashMap" [
       bench "sorted"    $ whnf hashmap sorted
     , bench "random"    $ whnf hashmap random
     , bench "revsorted" $ whnf hashmap revsorted
     ]
-  , bgroup "CritBit" [
+  , {-bgroup "CritBit" [
       bench "sorted"    $ whnf critbit sorted
     , bench "random"    $ whnf critbit random
     , bench "revsorted" $ whnf critbit revsorted
@@ -116,7 +117,7 @@ boxedTest name = \ ~(random,sorted,revsorted) ->
     , bench "random"    $ whnf lsmhm random
     , bench "revsorted" $ whnf lsmhm revsorted
     ]
-  , bgroup "LSM Vanilla" [
+  ,  -}bgroup "LSM Vanilla" [
       bench "sorted"    $ whnf lsm sorted
     , bench "random"    $ whnf lsm random
     , bench "revsorted" $ whnf lsm revsorted
@@ -135,8 +136,12 @@ intmap xs = G.foldl' (\m k -> I.insert k value m) I.empty xs
 mmap :: (G.Vector v k, Ord k) => v k -> M.Map k Int
 mmap xs = G.foldl' (\m k -> M.insert k value m) M.empty xs
 
+lsmunbox :: (G.Vector v k, Ord k, U.Unbox k) => v k -> UnboxedVanilla.UnboxedVanillaMap k Int
+lsmunbox xs = G.foldl' (\m k -> UnboxedVanilla.put k value m) mempty xs
+
 lsm :: (G.Vector v k, Ord k) => v k -> Vanilla.VanillaMap k Int
 lsm xs = G.foldl' (\m k -> Vanilla.put k value m) mempty xs
+--lsm = Vanilla.fromListAsc . fmap (\k -> (k, value)) . G.toList
 
 lsmhm :: (G.Vector v k, Ord k, Hashable k) => v k -> LSMHashMap.LSMHashMap k (Last Int)
 lsmhm xs = G.foldl' (\m k -> LSMHashMap.put k (Last value) m) mempty xs

@@ -3,7 +3,6 @@
   in-memory log structured merge tree, which is appropriate for sets and maps
   that focus on writes rather than reads.
 -}
-{-# LANGUAGE TemplateHaskell, FlexibleInstances, NoMonomorphismRestriction #-}
 module Data.LSM.Vanilla (
   -- * A traditional map based on LSM
   VanillaMap,
@@ -11,14 +10,17 @@ module Data.LSM.Vanilla (
   put,
   get,
   fromList,
+  fromListAsc,
   toList
 ) where
 import Data.Semigroup
+import Data.LSM (KV(..))
 import qualified Data.LSM as LSM
-import Data.LSM.Map (LSMMap, KV(..))
-
+import qualified Data.Vector as V
+import Data.LSM.Map (LSMMap)
 -- | A key-value store based on an LSM
-type VanillaMap k v = LSMMap k (Last v)
+type VanillaMap k v = LSMMap (V.Vector) k (Last v)
+
 -- | Make a map with only one value
 singleton :: (Ord k) => k -> v -> VanillaMap k v
 singleton k v = LSM.singleton $ KV k (Last v)
@@ -37,6 +39,9 @@ get k m = let
 -- | Create a map from a list of entries
 fromList :: (Ord k) => [(k, v)] -> VanillaMap k v
 fromList = LSM.fromList . fmap (\(k, v) -> KV k (Last v))
+
+fromListAsc :: (Ord k) => [(k, v)] -> VanillaMap k v
+fromListAsc = LSM.fromListAsc . fmap (\(k, v) -> KV k (Last v))
 
 -- | Create a list of entries from a map
 toList :: (Ord k) => VanillaMap k v -> [(k, v)]

@@ -21,10 +21,12 @@ library
   exposed-modules:      Data.LSM,
                         Data.LSM.Map,
                         Data.LSM.Vanilla,
+                        Data.LSM.UnboxedVanilla,
                         Data.LSM.LSMHashMap
   build-depends:        base >= 4.7 && < 5,
                         data-ordlist,
                         vector,
+                        vector-th-unbox,
                         vector-algorithms,
                         semigroups,
                         hashable

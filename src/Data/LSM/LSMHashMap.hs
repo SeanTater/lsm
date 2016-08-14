@@ -14,13 +14,15 @@ module Data.LSM.LSMHashMap (
   toList
 ) where
 import Data.Semigroup
+import Data.LSM (KV(..))
 import qualified Data.LSM as LSM
-import Data.LSM.Map (LSMMap, KV(..))
+import qualified Data.Vector as V
+import Data.LSM.Map (LSMMap)
 import Data.Function
 import Data.Hashable
 
 -- | A key-value store based on an LSM
-type LSMHashMap k v = LSMMap (Hashed k) v
+type LSMHashMap k v = LSMMap V.Vector (Hashed k) v
 data Hashed v = Hashed {hashedH :: !Int, hashedV :: !v} deriving (Show)
 instance Ord a => Ord (Hashed a) where
    compare x y = case (compare `on` hashedH) x y of
