@@ -19,6 +19,7 @@ library
   ghc-options:          -Wall
   hs-source-dirs:       src
   exposed-modules:      Data.LSM,
+                        Data.LSM.Layers,
                         Data.LSM.Map,
                         Data.LSM.Vanilla,
                         Data.LSM.UnboxedVanilla,

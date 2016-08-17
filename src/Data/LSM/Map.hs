@@ -10,7 +10,8 @@ module Data.LSM.Map (
   fromList,
   toList
 ) where
-import Data.LSM (LSM, VecLayer, KV(..))
+import Data.LSM (LSM, KV(..))
+import Data.LSM.Layers (VecLayer)
 import qualified Data.LSM as LSM
 import qualified Data.Vector.Generic as G
 import Data.Semigroup (Semigroup)
